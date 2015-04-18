@@ -45,7 +45,7 @@ module Perfectline
             target_class = association.klass
           end
 
-          if value.nil? || target_class.nil? || !exists?(target_class, value)
+          if value.nil? || target_class.nil? || (options[:allow_new] && record.new_record?) || !target_class.exists?(association.active_record_primary_key => value)
             errors = [attribute]
 
             # add the error on both :relation and :relation_id
@@ -65,10 +65,6 @@ module Perfectline
               record.errors.add(error, options[:message], :message => messages)
             end
           end
-        end
-
-        def exists?(target_class, value)
-          (options[:allow_new] && value.new_record?) || (value.persisted? && target_class.exists?(value.id))
         end
       end
     end
